@@ -132,3 +132,6 @@ ui-tests/playwright-report
 
 # custom ignores
 *.mp4
+.jpg
+.jpeg
+.png
