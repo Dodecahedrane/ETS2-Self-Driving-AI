@@ -5,16 +5,33 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
-#connect to redis
-redisAngle = redis.Redis(host='localhost', port=6379, db=1, decode_responses=True)
-redisSpeed = redis.Redis(host='localhost', port=6379, db=2, decode_responses=True)
+global redisAngle
+global redisSpeed
+
+def RedisConn():
+    #connect to redis
+    redisAngle = redis.Redis(host='localhost', port=6379, db=1, decode_responses=True)
+    redisSpeed = redis.Redis(host='localhost', port=6379, db=2, decode_responses=True)
+
+    try:
+        redisSpeed.ping()
+        redisAngle.ping()
+        return True 
+    except:
+        print('Cannot Connect to redis')
+        return False
+
+
 
 
 def WheelLabel():
     label = input('What Angle?  ')
     if label == 's':
-        return 'skip'
-    if label.isnumeric():
+        return 's'
+    elif label == 'x':
+        print('Exiting')
+        sys.exit()
+    elif label.isnumeric():
         if int(label) > 0 and int(label) < 180:
             return label
         else:
@@ -34,7 +51,7 @@ def WheelLabeler(path):
         print('Directory Does Not Exists')
         sys.exit()
     
-    directory = os.fsencode(path+'/Original/')
+    directory = os.fsencode(path+'/Angle/')
     
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
@@ -45,16 +62,20 @@ def WheelLabeler(path):
             
             label = WheelLabel()
             if label != 's':
-                redisAngle.set(filename, label)
-                print(label + ' Degrees')
-            else:
+                if redisAngle.get(label) == None:
+                    redisAngle.set(filename, label)
+                    os.remove(path + '/Angle/' +  filename)
+            elif label == 's':
                 print('Skipped')
 
 def SpeedLabel():
     label = input('What Speed?  ')
     if label == 's':
-        return 'skip'
-    if label.isnumeric():
+        return 's'
+    elif label == 'x':
+        print('Exiting')
+        sys.exit()
+    elif label.isnumeric():
         if int(label) > 0 and int(label) < 100:
             return label
         else:
@@ -79,15 +100,17 @@ def SpeedLabeler(path):
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
         if filename.endswith(".jpg"):
-            img = mpimg.imread(path + filename)
+            img = mpimg.imread(path + '/' + filename)
             imgplot = plt.imshow(img)
             plt.show()
             
             label = SpeedLabel()
             if label != 's':
-                redisSpeed.set(filename, label)
-                print(label + ' Degrees')
-            else:
+                if redisSpeed.get(label) == None:
+                    redisSpeed.set(filename, label)
+                    os.remove(path + '/' + filename)
+                print(label + ' MPH')
+            elif label == 's':
                 print('Skipped')
 
 def run():
@@ -112,5 +135,22 @@ if __name__ == "__main__":
     print('ETS 2 Speed and Wheel Angle Labeling Tool')
     print('')
     print('')
-    i = ''
-    run()
+
+    #connect to redis
+    redisAngle = redis.Redis(host='localhost', port=6379, db=1, decode_responses=True)
+    redisSpeed = redis.Redis(host='localhost', port=6379, db=2, decode_responses=True)
+    status = False
+
+    try:
+        redisSpeed.ping()
+        redisAngle.ping()
+        status = True 
+    except:
+        print('Cannot Connect to redis')
+        status = False
+
+    if(status):
+        i = ''
+        run()
+    else:
+        print('Could not connect to local redis instance. please try again')
