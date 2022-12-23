@@ -138,3 +138,5 @@ ui-tests/playwright-report
 Tooling/Frames/
 Tooling/SpeedLabel/
 Tooling/img.jpg
+Tooling/GenerateSteeringImages/GeneratedImages
+Tooling/FrameExtraction/Frames
