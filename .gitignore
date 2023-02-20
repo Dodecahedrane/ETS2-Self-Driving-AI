@@ -132,6 +132,7 @@ ui-tests/playwright-report
 
 # custom ignores
 *.mp4
+*.avi
 *.jpg
 *.jpeg
 *.png
@@ -141,3 +142,6 @@ Tooling/SpeedLabel/
 Tooling/img.jpg
 Tooling/GenerateSteeringImages/GeneratedImages
 Tooling/FrameExtraction/Frames
+Tooling/CreateTrainingData/WheelFrames
+Tooling/CreateTrainingData/LabledFrames
+Tooling/CreateTrainingData/Frames
