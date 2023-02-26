@@ -1,0 +1,11 @@
+Folder name - YY-MM-DD HH-MM-SS (start time)
+
+Store in folder - 
+Zipped copy of dataset used
+Copy of Notebook
+Folder with model from end of each epoch
+bestModel.torch
+
+Images of graphs + output text file (epoch logs + final MSE values and test set MSE values)
+
+Copy to server???
