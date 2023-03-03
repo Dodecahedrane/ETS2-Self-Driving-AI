@@ -138,6 +138,7 @@ ui-tests/playwright-report
 *.png
 *.torch
 *.zip
+Tooling/TrainDriving/LabledFrames
 Tooling/Frames/
 Tooling/SpeedLabel/
 Tooling/img.jpg

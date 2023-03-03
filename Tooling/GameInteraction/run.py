@@ -76,7 +76,7 @@ def printConsoleDebug(of,tpc,csa,tsa):
     print(f'| Euro Truck Driving Simulator Self Driving System          Version: 0.05     |')
     print(f'|-------------------------------+---------------------------------------------+')
     print(f'| Operating Freq:     {of}hz   | Current Steering Angle:    {csa}   Degrees   |')
-    print(f'| Time Per Cycle:     {tpc}s    | Target Steering Angle:     {tsa}  Degrees    |')
+    print(f'| Time Per Cycle:     {tpc}s    | Target Steering Angle:    {tsa}  Degrees    |')
     print(f'+-------------------------------+---------------------------------------------+')
 
 
