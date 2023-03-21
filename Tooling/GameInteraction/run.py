@@ -5,9 +5,7 @@ from PIL import Image
 
 import os
  
-
-
-#import pyautogui
+import pyautogui
 import time
 
 import torchvision.models.segmentation
@@ -17,8 +15,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 modelsPath = 'Models'
-modelName = 'bestModel.torch'
-pathToModel = f'{modelsPath}/{modelName}'
+steerAngleModelPath = f'{modelsPath}/steerAngleModel.torch'
+driverModelPath = f'{modelsPath}/driverModel.torch'
 
 #wheel crop area
 x1W = 812
@@ -29,6 +27,12 @@ y2W = 1033
 #wheel image size
 widthWheel  = y2W - y1W
 heightWheel = x2W-x1W
+
+#refresh time
+refreshRate = 0.25
+
+#run time
+stoppingTime = 20
 
 #area of screen that window will be present in
 bounding_box = {'top': 340, 'left': 1490, 'width': 1920, 'height': 1080}
@@ -43,21 +47,23 @@ class net(nn.Module):
     
     def forward(self, x):
         x = F.leaky_relu(self.fc(x))
-
         a = F.leaky_relu(self.branch_a1(x))
-        
         out1 = self.branch_a2(a)
-        
         return out1
 
 
 
 def directionToSteer(current,target):
     difference = current-target
-    #if difference > 0:
-        #pyautogui.typewrite('a')
-    #elif difference < 0:
+    if difference > 0:
         #pyautogui.typewrite('d')
+        return 'd   '
+    elif difference < 0:
+        #pyautogui.typewrite('a')
+        return 'a   '
+    else:
+        return None
+
     
 def angleFormater(toFormat):
     missing = 4-len(str(toFormat))
@@ -66,17 +72,18 @@ def angleFormater(toFormat):
     if toFormat < 0:
         return ''.join([' ']*missing) + str(toFormat)
 
-def printConsoleDebug(of,tpc,csa,tsa):
+def printConsoleDebug(of,tpc,csa,tsa,kp):
     of = "{:.3f}".format(of)
     tpc = "{:.3f}".format(tpc)
     csa = angleFormater(round(csa))
     tsa = angleFormater(round(tsa))
     os.system('clear')
     print(f'+-----------------------------------------------------------------------------+')
-    print(f'| Euro Truck Driving Simulator Self Driving System          Version: 0.05     |')
+    print(f'| Euro Truck Driving Simulator Self Driving System          Version: 0.06     |')
     print(f'|-------------------------------+---------------------------------------------+')
-    print(f'| Operating Freq:     {of}hz   | Current Steering Angle:    {csa}   Degrees   |')
-    print(f'| Time Per Cycle:     {tpc}s    | Target Steering Angle:    {tsa}  Degrees    |')
+    print(f'| Operating Freq:     {of}hz   | Current Steering Angle:  {csa}   Degrees     |')
+    print(f'| Time Per Cycle:     {tpc}s    | Target Steering Angle:   {tsa}   Degrees     |')
+    print(f'|                               | Key Pressed This Cycle:     {kp}            |')
     print(f'+-------------------------------+---------------------------------------------+')
 
 
@@ -97,11 +104,11 @@ if __name__ == "__main__":
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu') 
 
     # load model to GPU
-    model = model.to(device)
+    steerAngleModel = model.to(device)
 
-    model.load_state_dict(torch.load(pathToModel))
+    steerAngleModel.load_state_dict(torch.load(steerAngleModelPath))
 
-    model.eval()
+    steerAngleModel.eval()
 
     sct = mss()
 
@@ -114,7 +121,7 @@ if __name__ == "__main__":
 
     while True:
         start = time.time()
-        time.sleep(0.75)
+        
         sct_img = sct.grab(bounding_box)
         wholeFrame = np.array(sct_img)
 
@@ -131,19 +138,25 @@ if __name__ == "__main__":
         wheel = wheel.to(device).unsqueeze(0)
 
         with torch.no_grad():
-            prediction = model(wheel)
+            prediction = steerAngleModel(wheel)
 
         detectedAngle = prediction.data.cpu().numpy()[0][0]
         realAngle = (180*detectedAngle)-90
 
-        targetAngle = 90
+        targetAngle = 0
 
-        #directionToSteer(realAngle,targetAngle)
+        keyPressed = directionToSteer(realAngle,targetAngle)
 
-        if time.time()-startTime > 30:
-            cv2.destroyAllWindows()
+        if time.time()-startTime > stoppingTime:
+            #cv2.destroyAllWindows()
             break
+
+        wait = abs(refreshRate-(time.time()-start))
+        if wait > 0:
+            time.sleep(wait)
         
         elapsed = time.time()-start
         freq = 1/elapsed
-        printConsoleDebug(freq,elapsed,realAngle,targetAngle)
+        printConsoleDebug(freq,elapsed,realAngle,targetAngle, keyPressed)
+
+        
