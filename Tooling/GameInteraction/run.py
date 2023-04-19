@@ -31,7 +31,7 @@ widthWheel  = y2W - y1W
 heightWheel = x2W-x1W
 
 #refresh time
-refreshRate = 0.1
+refreshRate = 0.05
 
 #run time
 stoppingTime = 60
@@ -98,14 +98,14 @@ class netNvidia(nn.Module):
 
 def directionToSteer(current,target):
     difference = current-target
-    if difference > 0:
+    if difference > 0.05:
         keyboard.press('d')
-        time.sleep(0.01)
+        time.sleep(0.005)
         keyboard.release('d')
         return 'd   '
-    elif difference < 0:
+    elif difference < -0.05:
         keyboard.press('a')
-        time.sleep(0.01)
+        time.sleep(0.005)
         keyboard.release('a')
         return 'a   '
     else:
@@ -116,7 +116,7 @@ def angleFormater(toFormat):
     missing = 4-len(str(toFormat))
     if toFormat >=0:
         return ''.join([' ']*missing) + str(toFormat)
-    if toFormat < 0:
+    elif toFormat < 0:
         return ''.join([' ']*missing) + str(toFormat)
 
 def printConsoleDebug(of,tpc,csa,tsa,kp):
@@ -128,7 +128,7 @@ def printConsoleDebug(of,tpc,csa,tsa,kp):
     print(f'+-----------------------------------------------------------------------------+')
     print(f'| Euro Truck Driving Simulator Self Driving System          Version: 0.06     |')
     print(f'|-------------------------------+---------------------------------------------+')
-    print(f'| Operating Freq:     {of}hz   | Current Steering Angle:  {csa}   Degrees     |')
+    print(f'| Operating Freq:     {of}hz  | Current Steering Angle:  {csa}   Degrees     |')
     print(f'| Time Per Cycle:     {tpc}s    | Target Steering Angle:   {tsa}   Degrees     |')
     print(f'|                               | Key Pressed This Cycle:     {kp}            |')
     print(f'+-------------------------------+---------------------------------------------+')
@@ -195,8 +195,8 @@ if __name__ == "__main__":
         with torch.no_grad():
             prediction = steerAngleModel(wheel)
 
-        detectedAngle = prediction.data.cpu().numpy()[0][0]
-        realAngle = (180*detectedAngle)-90
+        realAngle = prediction.data.cpu().numpy()[0][0]
+        realAngle = (180*realAngle)-90
 
         # crop road from full frame and resize
         cropRoad = wholeFrame[x1R:x2R, y1R:y2R]
@@ -208,22 +208,28 @@ if __name__ == "__main__":
         resizedRoad = transformImg(np.array(resizedRoad))
         resizedRoad = resizedRoad.to(device).unsqueeze(0)
 
+        # predict angle to steer at
         with torch.no_grad():
             prediction = driverModel(resizedRoad)
 
         targetAngle = prediction.data.cpu().numpy()[0][0]
 
-        #keyPressed = 'z'
+        # real angle un normalise
+        targetAngle = (180*targetAngle)-90
+
+        # steer vehicle
         keyPressed = directionToSteer(realAngle,targetAngle)
 
+        # ends program after set time
         if time.time()-startTime > stoppingTime:
-            #cv2.destroyAllWindows()
             break
-
+        
+        # waits until next cycle is due
         wait = abs(refreshRate-(time.time()-start))
         if wait > 0:
             time.sleep(wait)
         
+        # prints debug for user
         elapsed = time.time()-start
         freq = 1/elapsed
         printConsoleDebug(freq, elapsed, realAngle, targetAngle, keyPressed)
