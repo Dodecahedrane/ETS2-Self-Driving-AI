@@ -1,6 +1,0 @@
-+-----------------------------------------------------------------------------+
-| Euro Truck Driving Simulator Self Driving System          Version: 0.01     |
-|-------------------------------+---------------------------------------------+
-| Operating Freq:          hz   | Current Steering Angle:        Degrees      |
-| Time Per Cycle:          s    | Target Steering Angle:         Degrees      |
-+-------------------------------+---------------------------------------------+
