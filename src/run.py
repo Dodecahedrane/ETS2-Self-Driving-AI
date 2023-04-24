@@ -17,7 +17,7 @@ import torch.nn.functional as F
 import selfDriving
 
 modelsPath = 'Models'
-steerAngleModelPath = f'{modelsPath}/steerAngleModel.torch'
+steerAngleModelPath = f'{modelsPath}/steeringModel.torch'
 driverModelPath = f'{modelsPath}/driverModel.torch'
 
 #wheel crop area

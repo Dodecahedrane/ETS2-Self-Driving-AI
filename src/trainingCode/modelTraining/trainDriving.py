@@ -37,7 +37,7 @@ trainPercentage = 0.85
 testPercentage = 0.10
 valPercentage = 0.05
 
-modelPath = 'Models/drivingModel.torch'
+modelPath = 'Models/driverModel.torch'
 
 path = 'LabeledDrivingFrames/'
 dataFiles = []
