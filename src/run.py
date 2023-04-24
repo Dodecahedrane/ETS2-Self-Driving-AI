@@ -79,30 +79,32 @@ def printConsoleDebug(of,tpc,csa,tsa,kp):
     tsa = angleFormater(round(tsa))
     os.system('clear')
     print(f'+-----------------------------------------------------------------------------+')
-    print(f'| Euro Truck Driving Simulator Self Driving System          Version: 1.01     |')
+    print(f'| Euro Truck Driving Simulator Self Driving System          Version: 1.21     |')
     print(f'|-------------------------------+---------------------------------------------+')
     print(f'| Operating Freq:     {of}hz  | Current Steering Angle:  {csa}   Degrees     |')
     print(f'| Time Per Cycle:     {tpc}s    | Target Steering Angle:   {tsa}   Degrees     |')
-    print(f'|                               | Key Pressed This Cycle:     {kp}            |')
+    print(f'|                               | Key Pressed This Cycle:    {kp}             |')
     print(f'+-------------------------------+---------------------------------------------+')
 
 
 if __name__ == "__main__":
     try:
         #refresh time
-        refreshRate = sys.argv[1]
+        refreshRate = float(sys.argv[1])
         print('Refresh Time Set To: ', refreshRate)
 
         #run time
-        stoppingTime = sys.argv[2]
+        stoppingTime = int(sys.argv[2])
         print('Stopping time set as: ', stoppingTime)
 
         #start in countdown
-        startIn = sys.argv[3]
+        startIn = int(sys.argv[3])
         print('Start in time set to: ', startIn)
     
-    except:
+    except Exception as ex:
+        print(ex)
         Exception('Missing Args, please check README.md for intructions')
+        time.sleep(100)
 
 
 
@@ -134,8 +136,8 @@ if __name__ == "__main__":
     keyboard = Controller()
 
     
-    print(f"Starting in {str(startIn)} Seconds.........")
-    time.sleep(startIn)
+    print(f"Starting in {startIn} Seconds.........")
+    time.sleep(int(startIn))
 
 
     startTime = time.time()
