@@ -31,22 +31,15 @@ This project was tested on a system with a 5950x with 128GB of RAM and an RTX309
 
 This project was built on Ubuntu 22.04 LTS, 20.04LTS or 18.04LTS should work but are untested.
 
-
 A copy of ETS2 is required
 
-
-Python - 3.10
-PyTorch Version -
-CUDA -
-
-
-Python Libraries -
-
-
-- OpenCV
-- PIL
-- MSS
-- Pynput
+- Python - 3.10
+- PyTorch - 1.13.1
+- CUDA - 12.0
+- OpenCV - 4.7.0.72
+- PIL - 9.5.0
+- MSS - 9.0.1
+- Pynput - 1.7.6
 
 
 OBS and Blender were used to record and edit the training footage.
