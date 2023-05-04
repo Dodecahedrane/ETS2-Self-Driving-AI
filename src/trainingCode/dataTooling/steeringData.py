@@ -47,7 +47,7 @@ def AugmentSteeringData():
         noExtension = file[:-4]
 
         #load image
-        img = cv2.imread('Starting/'+file)
+        img = cv2.imread(f'{startingPath}/'+file)
         xA = 812
         xB = 932
         yA = 913
